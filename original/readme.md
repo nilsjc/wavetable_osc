@@ -6,7 +6,7 @@ The prototype never reach finished state.<br>
 <br>
 Some ideas that never took place was USB support for uploading wavetable data, exponential control and CV inputs and more.
 Note, though, that this version does indeed have CV inputs for frequency and wave pots.<br>
-The .hex file is the raw data. The original C code is lost.<br>
+The .hex file is the raw data. Parts of the original C code is restored.<br>
 As for now, in this state, the oscillator contains of one modulation and main oscillator with wavetables.<br>
 It also contains a simple sequencer.<br>
 ## Things to do
@@ -15,5 +15,4 @@ It also contains a simple sequencer.<br>
 - LED views of selected wavetables
 - exponential control of frequency
 <br>
-However, the original C code is lost.<br>
 To be continued...

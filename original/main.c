@@ -1,8 +1,9 @@
 /*
 
 This is most of the original C code for wave 4550. It is undocumented and probably in a broken state.
-Written in 2011 by Nils Edvardsson
-
+Sequencer part is missing!
+Compiled by the HI-TECH C Compiler for Microchip 8-bit pic´s
+Written in 2010s by Nils Edvardsson
 
 */
 
@@ -114,6 +115,7 @@ for(;;){
 	switch(mode){
 
 	case 1:
+	// get pitch pot
 		ADCON0 = 0x01;
 		ADFM=1;
 		GODONE=1;
@@ -128,7 +130,9 @@ for(;;){
 		pitchpot=adresult16;
 
 
-
+		// get wave pot
+		// ActWave2 is the actual wave and Volume3 is used for the x-fading
+		// between waves, för smooth wave sweeping
 		ADCON0 = 0x05;
 		ADFM=1;
 		GODONE=1;
@@ -145,6 +149,9 @@ for(;;){
 		Volume3=(adresult16&0b1111111);
 
 //		# 130
+
+		// get peek pot
+		// peek extends the wave read, reading outside the actual wave memory
 		ADCON0 = 0x0D;
 		ADFM=0;
 		GODONE=1;
@@ -153,7 +160,7 @@ for(;;){
 		adresult8+=ADRESH;
 		Peek=adresult8;
 
-
+		// get Modulation Frequency pot
 		ADCON0 = 0x11;
 		ADFM=1;
 		GODONE=1;
@@ -168,7 +175,7 @@ for(;;){
 		ModFreq=adresult16;
 
 
-
+		// get Modulation Index pot 
 		ADCON0 = 0x15;
 		ADFM=0;
 		GODONE=1;
@@ -178,18 +185,22 @@ for(;;){
 		ModLevel=adresult8;
 
 
-
+		// ModWavse = Modulation Wave Select (8 waveforms)
 		if(RD0==0 && StatusRD0){ModWavse+=256;StatusRD0=0;}
 		if(ModWavse>2048){ModWavse=0;}
 		if(RD0==1){StatusRD0=1;}
 
-
+		// Modulation destination, three modes selectable
+		// ModDest: 0 = frequency modulation
+		// ModDest: 1 = wave modulation
+		// ModDest: 2 = both
 		if(RD1==0 && StatusRD1){ModDest++;StatusRD1=0;}
+		// Grid1 is connected with the freqeuncy modulation
 		if(ModDest==1){Grid1=0;}else{Grid1=1;}
 		if(ModDest==3){ModDest=0;}
 		if(RD1==1){StatusRD1=1;}
 
-
+		// select Wave bank
 		if(RD2==0 && StatusRD2){
 		StatusRD2=0;
 		WaveBank+=2304;
@@ -197,9 +208,10 @@ for(;;){
 		}
 		if(RD2==1){StatusRD2=1;}
 
-
+		// select reading function 
 		if(RD4==0 && StatusRD4){
 		StatusRD4=0;
+		// selects between sawtooth or sine read function
 		if(peekWave==256){peekWave=0;}else{peekWave=256;}
 		}
 
@@ -226,10 +238,10 @@ void interrupt klocka(void){
 	scan2=count2;
 	scan2 &=0b000011111111000000000000;
 	scan2>>=12;
-	scan2+=ModWavse;
+	scan2+=ModWavse;	// ModWavse = Modulation Wave select
 	cpMod += (scan2+2304);
 
-	wave = (*cpMod)+127;
+	wave = (*cpMod)+127; // +127 for converting from signed to unsigned char
 
 
 
@@ -276,19 +288,23 @@ void interrupt klocka(void){
 	cp3+=(ActWave+WaveBank);
 
 
-
+	// for converting from signed to unsigned ?
 	wave=128;
 	wave2=128;
-
+	
+	// FinalWave is a mix between wave and wave2 for smooth x-fading
+	// between waveforms. wave2 is always the next one in the table
 	wave+=*cp3;
 	cp3+=256;
 	wave2+=*cp3;
-
+	
+	// 127 = 7 bit dynamic
 	wave*=(127-Volume3);
 	wave=PRODH;
 	wave2*=Volume3;
 	wave2=PRODH;
-
+	
+	// mixing stage
 	wave+=wave2;
 	FinalWave=wave;
 

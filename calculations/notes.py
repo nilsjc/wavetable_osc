@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-A = 2047
-r = (4095 / A) ** (1 / 126)
+A = 512
+r = ((A*2) / A) ** (1 / 126)
 array = [round(A * (r ** i)) for i in range(127)]
 
 with open("output.txt", "w") as file:

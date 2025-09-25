@@ -151,10 +151,8 @@ void main()
             {
                 bounceDelay = BOUNCEDELAY_TIME;
                 ModWavse += 256;
-            }
-            if (ModWavse > 2048)
-            {
-                ModWavse = 0;
+                if (ModWavse > 2048)
+                    ModWavse = 0;
             }
 
             // Modulation destination, three modes selectable
@@ -166,23 +164,19 @@ void main()
                 bounceDelay = BOUNCEDELAY_TIME;
                 ModDest++;
                 if (ModDest == 3)
-                {
                     ModDest = 0;
+
+                // set modes according to ModDest
+                if (ModDest == 0)
+                    WaveMode = 0;
+
+                else if (ModDest == 1)
+                {
+                    WaveMode = 1;
+                    PitchMode = 0;
                 }
-            }
-            // Grid1 is connected with the frequency modulation
-            if (ModDest == 0)
-            {
-                WaveMode = 0;
-            }
-            else if (ModDest == 1)
-            {
-                WaveMode = 1;
-                PitchMode = 0;
-            }
-            else
-            {
-                PitchMode = 1;
+                else
+                    PitchMode = 1;
             }
 
             // select Wave bank
@@ -203,13 +197,9 @@ void main()
                 bounceDelay = BOUNCEDELAY_TIME;
                 // selects between sawtooth or sine read function
                 if (peekWave == 256)
-                {
                     peekWave = 0;
-                }
                 else
-                {
                     peekWave = 256;
-                }
             }
 
             break;

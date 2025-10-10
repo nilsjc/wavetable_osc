@@ -213,7 +213,8 @@ void main()
                     ModDest = 1;
                 // set modes according to ModDest
                 PitchMode = ModDest & 1;
-                WaveMode = ModDest & 2;
+                ModDest &= 2;
+                WaveMode = ModDest >> 1;
             }
 
             // select Wave bank

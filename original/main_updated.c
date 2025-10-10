@@ -6,6 +6,9 @@ Missing values in wave tables.
 Compiled by the HI-TECH C Compiler for Microchip 8-bit pic´s
 Written in 2010s by Nils Edvardsson
 
+NOTE:
+This is updated with new changes and improvments in 2025
+
 */
 #include <xc8.h>
 #include "18F4550_configuration_bits.c"
@@ -23,7 +26,7 @@ unsigned char Volume1, Volume2, Volume3, ModLevel;
 unsigned char wave2, wave, FinalWave;
 unsigned long count = 0, count2 = 0, nmbr = 0, nmbr2 = 0, ModFreq = 0, pitchpot = 0;
 unsigned long count3 = 0;
-unsigned char ModDest = 0, PitchMode = 1, WaveMode = 0;
+unsigned char ModDest = 1, PitchMode = 1, WaveMode = 0;
 unsigned int peekWave = 256;
 unsigned char waSy = 0;
 unsigned int bounceDelay = 0;
@@ -60,10 +63,7 @@ void main()
             ADFM = 1;
             GODONE = 1;
             adresult16 = 0;
-            while (GODONE)
-            {
-                ;
-            }
+            while (GODONE){;}
             adresult16 += ADRESH;
             adresult16 <<= 8;
             adresult16 += ADRESL;
@@ -82,10 +82,7 @@ void main()
             ADFM = 1;
             GODONE = 1;
             adresult16 = 0;
-            while (GODONE)
-            {
-                ;
-            }
+            while (GODONE){;}
             adresult16 += ADRESH;
             adresult16 <<= 8;
             adresult16 += ADRESL;
@@ -107,10 +104,7 @@ void main()
             ADFM = 0;
             GODONE = 1;
             adresult8 = 0;
-            while (GODONE)
-            {
-                ;
-            }
+            while (GODONE){;}
             adresult8 += ADRESH;
             Peek = adresult8;
 
@@ -119,10 +113,7 @@ void main()
             ADFM = 1;
             GODONE = 1;
             adresult16 = 0;
-            while (GODONE)
-            {
-                ;
-            }
+            while (GODONE){;}
             adresult16 += ADRESH;
             adresult16 <<= 8;
             adresult16 += ADRESL;
@@ -139,10 +130,7 @@ void main()
             ADFM = 0;
             GODONE = 1;
             adresult8 = 0;
-            while (GODONE)
-            {
-                ;
-            }
+            while (GODONE){;}
             adresult8 = ADRESH;
             FMLevel = ModLevel = adresult8;
 
@@ -156,27 +144,19 @@ void main()
             }
 
             // Modulation destination, three modes selectable
-            // ModDest: 0 = frequency modulation
-            // ModDest: 1 = wave modulation
-            // ModDest: 2 = both
+            // ModDest: 1 = frequency modulation
+            // ModDest: 2 = wave modulation
+            // ModDest: 3 = both
             if (RD1 == 0 && bounceDelay == 0)
             {
                 bounceDelay = BOUNCEDELAY_TIME;
                 ModDest++;
-                if (ModDest == 3)
-                    ModDest = 0;
+                if (ModDest >= 4)
+                    ModDest = 1;
 
                 // set modes according to ModDest
-                if (ModDest == 0)
-                    WaveMode = 0;
-
-                else if (ModDest == 1)
-                {
-                    WaveMode = 1;
-                    PitchMode = 0;
-                }
-                else
-                    PitchMode = 1;
+                PitchMode = ModDest & 1;
+                WaveMode = (ModDest & 2) >> 1;
             }
 
             // select Wave bank

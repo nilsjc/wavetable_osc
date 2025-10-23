@@ -1,4 +1,0 @@
-C:/c++projects/wavetableOSC/wave4550_v1.2/_build/wave4550_v1.2/default/CMakeFiles/wave4550_v1_2_default_default_XC8_compile.dir
-C:/c++projects/wavetableOSC/wave4550_v1.2/_build/wave4550_v1.2/default/CMakeFiles/wave4550_v1_2_default_image_UOQDe45L.dir
-C:/c++projects/wavetableOSC/wave4550_v1.2/_build/wave4550_v1.2/default/CMakeFiles/edit_cache.dir
-C:/c++projects/wavetableOSC/wave4550_v1.2/_build/wave4550_v1.2/default/CMakeFiles/rebuild_cache.dir

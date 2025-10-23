@@ -1,0 +1,54 @@
+{
+    "version": "1.7",
+    "configurations": [
+        {
+            "name": "default",
+            "id": "",
+            "device": "PIC18F4550",
+            "imageType": "application",
+            "imagePath": "./out/wave4550_v1.2/default.elf",
+            "toolProperties": "default-tool-base",
+            "packs": [
+                {
+                    "name": "PIC18Fxxxx_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.7.171"
+                }
+            ],
+            "fileSet": "default",
+            "toolchain": "default-XC8",
+            "userVariables": "default-uservariables",
+            "preBuildSteps": [],
+            "postBuildSteps": []
+        }
+    ],
+    "propertyGroups": [
+        {
+            "name": "default-uservariables",
+            "type": "uservariables",
+            "properties": {}
+        },
+        {
+            "name": "default-XC8",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {}
+        },
+        {
+            "name": "default-tool-base",
+            "type": "tool",
+            "properties": {}
+        }
+    ],
+    "fileSets": [
+        {
+            "name": "default",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                }
+            ]
+        }
+    ]
+}

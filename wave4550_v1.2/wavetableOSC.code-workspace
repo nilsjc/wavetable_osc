@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "../../../../c++projects/wavetableOSC"
+		},
+		{
+			"name": "wave4550_v1.2",
+			"path": "."
+		}
+	],
+	"settings": {
+		"mplab.clangd.arguments": [
+			"--compile-commands-dir=${workspaceFolder}\\wave4550_v1.2\\_build\\wave4550_v1.2\\default"
+		],
+		"mplab.clangd.path": "c:\\Program Files\\Microchip\\xc8\\v3.10\\bin\\xc8-clangd.exe",
+		"C_Cpp.intelliSenseEngine": "disabled"
+	}
+}

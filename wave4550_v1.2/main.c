@@ -148,10 +148,10 @@ int main()
             ModWave2 = 0;
         }
         adresult16 += ModWave2;
-        ActWave2 = (adresult16 & 0b1110000000);
+        ActWave2 = (adresult16 & 0b1111000000);
         ActWave2 <<= 1;
         ActWave = ActWave2;
-        Volume3 = (adresult16 & 0b1111111);
+        Volume3 = (adresult16 & 0b111111);
 
         //		# 130
 
@@ -398,8 +398,8 @@ void __interrupt() timer0ISR()
     //     PORTCbits.RC2 = 1;
     // }
 
-    // 127 = 7 bit dynamic
-    wave *= (127 - Volume3);
+    // 64 = 6 bit dynamic
+    wave *= (64 - Volume3);
     wave = PRODH;
     wave2 *= Volume3;
     wave2 = PRODH;

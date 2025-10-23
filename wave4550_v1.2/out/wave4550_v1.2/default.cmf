@@ -26,7 +26,7 @@ dataCOMRAM COMRAM 1 55 55 5 1 1
 bssCOMRAM COMRAM 1 2 2 2E 1 1
 mediumconst MEDIUMCONST 0 51FE 51FE 2E02 1 2
 config CONFIG 4 300000 300000 E 1 1
-$C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+$C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 init CODE 0 E E 4 1 2
 reset_vec CODE 0 0 0 4 1 2
 config CONFIG 4 300000 300000 E 1 1
@@ -72,7 +72,7 @@ MEDIUMCONST 9EB-51FD 1
 # All other numeric values are in decimal.
 %LINETAB
 $C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-8 intcode CODE >11195:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
+8 intcode CODE >11195:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
 8 intcode CODE >248:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
 954 text2 CODE >416:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
 956 text2 CODE >417:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
@@ -254,42 +254,42 @@ D6 intcode_body CODE >267:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
 92C text0 CODE >238:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
 934 text0 CODE >241:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
 946 text0 CODE >243:C:\c++projects\wavetableOSC\wave4550_v1.2\main.c
-9A0 cinit CODE >10114:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A0 cinit CODE >10116:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A0 cinit CODE >10119:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A0 cinit CODE >10265:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A2 cinit CODE >10266:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A4 cinit CODE >10267:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A6 cinit CODE >10268:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9A8 cinit CODE >10269:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9AA cinit CODE >10270:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9AC cinit CODE >10271:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9B0 cinit CODE >10272:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9B4 cinit CODE >10273:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9B4 cinit CODE >10274:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9B6 cinit CODE >10275:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9BA cinit CODE >10276:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9BC cinit CODE >10277:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9BE cinit CODE >10278:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9C0 cinit CODE >10282:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9C4 cinit CODE >10283:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9C6 cinit CODE >10284:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9C6 cinit CODE >10285:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9C8 cinit CODE >10286:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9CA cinit CODE >10287:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9CC cinit CODE >10290:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D0 cinit CODE >10291:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D2 cinit CODE >10292:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D2 cinit CODE >10293:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D4 cinit CODE >10294:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D6 cinit CODE >10295:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D8 cinit CODE >10301:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9D8 cinit CODE >10303:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9DA cinit CODE >10304:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9DC cinit CODE >10306:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9DE cinit CODE >10307:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9E0 cinit CODE >10308:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
-9E2 cinit CODE >10309:C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_1.s
+9A0 cinit CODE >10114:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A0 cinit CODE >10116:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A0 cinit CODE >10119:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A0 cinit CODE >10265:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A2 cinit CODE >10266:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A4 cinit CODE >10267:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A6 cinit CODE >10268:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9A8 cinit CODE >10269:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9AA cinit CODE >10270:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9AC cinit CODE >10271:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9B0 cinit CODE >10272:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9B4 cinit CODE >10273:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9B4 cinit CODE >10274:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9B6 cinit CODE >10275:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9BA cinit CODE >10276:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9BC cinit CODE >10277:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9BE cinit CODE >10278:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9C0 cinit CODE >10282:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9C4 cinit CODE >10283:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9C6 cinit CODE >10284:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9C6 cinit CODE >10285:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9C8 cinit CODE >10286:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9CA cinit CODE >10287:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9CC cinit CODE >10290:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D0 cinit CODE >10291:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D2 cinit CODE >10292:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D2 cinit CODE >10293:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D4 cinit CODE >10294:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D6 cinit CODE >10295:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D8 cinit CODE >10301:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9D8 cinit CODE >10303:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9DA cinit CODE >10304:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9DC cinit CODE >10306:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9DE cinit CODE >10307:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9E0 cinit CODE >10308:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
+9E2 cinit CODE >10309:C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_1.s
 # %SYMTAB Section
 # An enumeration of all symbols in the program.
 # The beginning of the section is indicated by %SYMTAB.
@@ -319,7 +319,7 @@ _ADIP 7CFE 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2
 _PEIE 7F96 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _Peek 2E 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _RBIE 7F93 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 _freq 1C 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _main 6BC 0 CODE 0 text0 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _mode 59 0 COMRAM 1 dataCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -330,9 +330,9 @@ _Volume1 2B 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\w
 _Volume2 2A 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _Volume3 29 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 btemp 1 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-___stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-start E 0 CODE 0 init C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+___stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+start E 0 CODE 0 init C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __end_of_timer0ISR 6BC 0 CODE 0 intcode_body C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 timer0ISR@freqIndex2 40 0 COMRAM 1 cstackCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __HbssCOMRAM 0 0 ABS 0 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -341,11 +341,11 @@ __Hpowerup 0 0 CODE 0 powerup C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave
 _timer0ISR 8 0 CODE 0 intcode C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __LnvCOMRAM 0 0 ABS 0 nvCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __HdataCOMRAM 0 0 ABS 0 dataCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-__accesstop 60 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-intlevel0 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-intlevel1 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-intlevel2 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-intlevel3 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+__accesstop 60 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+intlevel0 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+intlevel1 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+intlevel2 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+intlevel3 0 0 CODE 0 text C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __LbssCOMRAM 0 0 ABS 0 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _noscTone 23 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 timer0ISR@readAndPointPN 41 0 COMRAM 1 cstackCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -359,8 +359,8 @@ _ADCON2 FC0 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.
 _ADRESH FC4 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _ADRESL FC3 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _pitchpot 18 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___inthi_sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-___intlo_sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___inthi_sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+___intlo_sp 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __LdataCOMRAM 0 0 ABS 0 dataCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Hintcode_body 0 0 ABS 0 intcode_body C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 timer0ISR@modPN 43 0 COMRAM 1 cstackCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -385,7 +385,7 @@ _adresult8 2F 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out
 _TMR0IE 7F95 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _TMR0IF 7F92 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _testnotes 51FF 0 MEDIUMCONST 0 mediumconst C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-isa$xinst 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+isa$xinst 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __Hbank0 0 0 ABS 0 bank0 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Hbank1 0 0 ABS 0 bank1 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Hbank2 0 0 ABS 0 bank2 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -494,16 +494,16 @@ timer0ISR@oct2 54 0 COMRAM 1 cstackCOMRAM C:\c++projects\wavetableOSC\wave4550_v
 __Lsivt_hi 0 0 CODE 0 sivt_hi C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lsivt_lo 18 0 CODE 0 sivt_lo C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lfarbss 0 0 FARRAM 0 farbss C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___inthi_stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-___inthi_stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___inthi_stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+___inthi_stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __Lfardata 0 0 FARRAM 0 fardata C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-isa$std 1 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+isa$std 1 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 _table1 7DFF 0 MEDIUMCONST 0 mediumconst C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _table3 63FF 0 MEDIUMCONST 0 mediumconst C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 timer0ISR@baseInc2 4B 0 COMRAM 1 cstackCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _MonitorThreeLeds 954 0 CODE 0 text2 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-stackhi 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-stacklo 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+stackhi 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+stacklo 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __Lintcode 8 0 CODE 0 intcode C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lintret 0 0 ABS 0 intret C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lirdata 0 0 CODE 0 irdata C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
@@ -530,17 +530,17 @@ __ptext0 6BC 0 CODE 0 text0 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave45
 __ptext2 954 0 CODE 0 text2 C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _bounceDelay E 0 COMRAM 1 bssCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lstruct 0 0 COMRAM 1 struct C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-__ramtop 800 0 RAM 0 ramtop C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+__ramtop 800 0 RAM 0 ramtop C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __Lpowerup 0 0 CODE 0 powerup C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Leeprom_data 0 0 EEDATA 0 eeprom_data C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __H__absolute__ 0 0 ABS 0 __absolute__ C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Lreset_vec 0 0 CODE 0 reset_vec C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 _PitchMode 57 0 COMRAM 1 dataCOMRAM C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___heap_hi 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-___heap_lo 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___heap_hi 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+___heap_lo 0 0 ABS 0 - C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 ___param_bank 0 0 ABS 0 - C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
-___intlo_stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
-___intlo_stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAsg7w.0\driver_tmp_9.o
+___intlo_stack_hi 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
+___intlo_stack_lo 0 0 STACK 2 stack C:\Users\NilsEd\AppData\Local\Temp\xcAs8ag.0\driver_tmp_9.o
 __Hbigdata 0 0 BIGRAM 1 bigdata C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __end_of__initialization 9D8 0 CODE 0 cinit C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o
 __Libigdata 0 0 CODE 0 ibigdata C:\c++projects\wavetableOSC\wave4550_v1.2\out\wave4550_v1.2\default.o

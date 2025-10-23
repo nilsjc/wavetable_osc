@@ -149,7 +149,7 @@ int main()
         }
         adresult16 += ModWave2;
         ActWave2 = (adresult16 & 0b1111000000);
-        ActWave2 <<= 1;
+        ActWave2 <<= 2;
         ActWave = ActWave2;
         Volume3 = (adresult16 & 0b111111);
 
@@ -299,6 +299,11 @@ void __interrupt() timer0ISR()
     ModWave -= 127;
     ModWave <<= 8;
     
+    // long tmp = (long)pitchpot + ModWave;
+    // if(tmp < 0) tmp = 0;
+    // else if(tmp > 1023) tmp = 1023;
+    // pitchpot = (unsigned int)tmp;
+
     // calculate frequency.
     unsigned char oct2 = (pitchpot >> 7) & 0x07; // extract 3 MSBs as 0..7
     unsigned char freqIndex2 = pitchpot & 0b1111111;

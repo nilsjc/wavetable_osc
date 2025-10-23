@@ -20,4 +20,5 @@ funclist
 nbproject/Makefile-*
 disassembly/
 out/
+_build/
 *.map

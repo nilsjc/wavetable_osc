@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-A = 256
+A = 1024
 r = ((A*2) / A) ** (1 / 128)
 array = [round(A * (r ** i)) for i in range(128)]
 

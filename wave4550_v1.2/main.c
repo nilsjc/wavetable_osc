@@ -11,7 +11,6 @@
 // 'C' source line config statements
 
 // CONFIG1L
-#include <pic18f4550.h>
 #pragma config PLLDIV = 5       // PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
 #pragma config CPUDIV = OSC1_PLL2// System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
 #pragma config USBDIV = 1       // USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes directly from the primary oscillator block with no postscale)
@@ -83,7 +82,7 @@ unsigned int AdIn16bit(unsigned char ADchannel);
 static void MonitorThreeLeds(char c);
 void SendValueToPc(unsigned char value);
 void InitUart(){
-    SPEN = 1; // enable serial port
+    SPEN = 1; // ensable serial port
     BRGH = 0; // low speed
     BRG16 = 1; // high speed
     SPBRG = 129; // 20MHz/16/38400-1
@@ -101,15 +100,16 @@ unsigned int adresult16 = 0, ActWave, ActWave2, wavse = 0;
 unsigned char adresult8, mode = 1, Peek = 0, Peek2 = 0, dly = 0;
 unsigned char Volume1, Volume2, Volume3, ModLevel, FMLevel;
 unsigned char wave2, wave, FinalWave;
-unsigned long count = 0, count2 = 0, nmbr = 0, nmbr2 = 0, ModFreq = 0, pitchpot = 0;
+unsigned long count = 0, count2 = 0, nmbr = 0, nmbr2 = 0, ModFreq = 0, oscPitch = 0;
 unsigned char noscTone = 0, noscMod = 0;
 unsigned long count3 = 0;
 unsigned char ModDest = 1, PitchMode = 1, WaveMode = 0;
 unsigned int peekWave = 256;
 unsigned char waSy = 0;
-unsigned int bounceDelay = 0;
-unsigned char GlobalOct = 0, GlobalPitch = 0;
+unsigned int bounceDelay = 0, adDelay=0;
+unsigned char MainOscOct = 0;
 unsigned int oldPitchPot = 0, oldModFreq = 0;
+unsigned char inputEnable = 1;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 int main()
@@ -120,7 +120,7 @@ int main()
     TRISD = 0xFF;
     TRISE = 0b00000111;
     ADCON0 = 0x01;
-    ADCON1 = 0x08;
+    ADCON1 = 0b11100010;// 0x08;
     ADCON2 = 0xAB;
     VCFG0 = 1; // Vref+ = Vdd reference on AN3 (pin 9)
 
@@ -134,16 +134,16 @@ int main()
     GIE = 1;
     RBIE = 0;
     PORTCbits.RC2 = 0;
-    InitUart();
-    unsigned int Q = 0;
-    for(Q = 0; Q < 16; Q++){
-        unsigned char resq = (unsigned char)Q;
-        SendValueToPc(resq);
-    }
-    unsigned char P = 0;
-    for(P = 0; P < 16; P++){
-        SendValueToPc(P);
-    }
+    //InitUart();
+    //unsigned int Q = 0;
+    // for(Q = 0; Q < 16; Q++){
+    //     unsigned char resq = (unsigned char)Q;
+    //     SendValueToPc(resq);
+    // }
+    // unsigned char P = 0;
+    // for(P = 0; P < 16; P++){
+    //     SendValueToPc(P);
+    // }
      TMR0IE = 1; // timer0 interrupt disable/enable
 
 
@@ -152,15 +152,21 @@ int main()
         // get pitch pot
         unsigned int pitch = AdIn16bit(0);
         oldPitchPot = pitch;
+        MainOscOct = (pitch >> 7) & 0b111;
 
         // get pitch input from pin 9 / RE1 / AN6
-        unsigned int pitchInput = AdIn16bit(7);
-        oldModFreq = pitchInput;
-        unsigned int result = pitch + (pitchInput << 3); // TODO: fine tune shift
+        unsigned int pitchInput = 0;
+        if(inputEnable == 1){
+            pitchInput = AdIn16bit(7);
+            oldModFreq = pitchInput;
+        }
+        // combine pitch pot and pitch input
+        unsigned int result = pitchInput;//pitch + (pitchInput * 16); // TODO: fine tune shift
+
         if (result > 1023)
             result = 1023;
 
-        pitchpot = result;
+        oscPitch = result;
 
         // get wave pot
         // ActWave2 is the actual wave and Volume3 is used for the x-fading
@@ -177,6 +183,7 @@ int main()
         // get peek pot
         // peek extends the wave read, reading outside the actual wave memory
         ADCON0bits.CHS = 3;
+        for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
         ADFM = 0;
         GODONE = 1;
         adresult8 = 0;
@@ -189,6 +196,7 @@ int main()
 
         // get Modulation Index pot
         ADCON0bits.CHS = 5;
+        for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
         ADFM = 0;
         GODONE = 1;
         adresult8 = 0;
@@ -202,6 +210,7 @@ int main()
         if (PORTDbits.RD0 == 0 && bounceDelay == 0)
         {
             bounceDelay = BOUNCEDELAY_TIME;
+            inputEnable ^= 1;
             ModWavse += 256;
             if (ModWavse > 2048)
                 ModWavse = 0;
@@ -213,7 +222,6 @@ int main()
         // ModDest: 3 = both
         if (PORTDbits.RD1 == 0 && bounceDelay == 0)
         {
-            MonitorThreeLeds(2);
             bounceDelay = BOUNCEDELAY_TIME;
             ModDest++;
             if (ModDest == 4)
@@ -230,17 +238,15 @@ int main()
         // select Wave bank
         if (PORTDbits.RD2 == 0 && bounceDelay == 0)
         {
-            MonitorThreeLeds(4);
-        
-            unsigned char pMsb = (oldPitchPot >> 8) & 0x03;
-            SendValueToPc(pMsb);
-            unsigned char p = oldPitchPot & 0xFF;
-            SendValueToPc(p);
+            // unsigned char pMsb = (oldPitchPot >> 8) & 0x03;
+            // SendValueToPc(pMsb);
+            // unsigned char p = oldPitchPot & 0xFF;
+            // SendValueToPc(p);
 
-            unsigned char oMsb = (oldModFreq >> 8) & 0x03;
-            SendValueToPc(oMsb);
-            unsigned char oi = oldModFreq & 0xFF;
-            SendValueToPc(oi);
+            // unsigned char oMsb = (oldModFreq >> 8) & 0x03;
+            // SendValueToPc(oMsb);
+            // unsigned char oi = oldModFreq & 0xFF;
+            // SendValueToPc(oi);
         
             bounceDelay = BOUNCEDELAY_TIME;
             // GlobalOct++;
@@ -258,7 +264,6 @@ int main()
         // select reading function
         if (PORTDbits.RD4 == 0 && bounceDelay == 0)
         {
-            MonitorThreeLeds(1);
             bounceDelay = BOUNCEDELAY_TIME;
             // selects between sawtooth or sine read function
             if (peekWave == 256)
@@ -321,22 +326,21 @@ void __interrupt() timer0ISR()
 
     // calculate frequency.
     //pitchpot += ModWave;
-    unsigned int freqIndex2 = (pitchpot & 0b1111111);
-    unsigned char oct2 = (pitchpot >> 7) & 7; // extract 3 MSBs as 0..7
-    MonitorThreeLeds(oct2);
+    unsigned int freqIndex2 = (oscPitch & 0b11110000) >> 4;
+    //unsigned char oct2 = (oscPitch >> 7) & 7; // extract 3 MSBs as 0..7
     unsigned long baseInc = (unsigned long)notes[freqIndex2];
     // Use 'if' statements instead of dynamic shift for better performance
-    if(oct2==0){count += (baseInc);}
-    if(oct2==1){count += (baseInc << 1);}
-    if(oct2==2){count += (baseInc << 2);}
-    if(oct2==3){count += (baseInc << 3);}
-    if(oct2==4){count += (baseInc << 4);}
-    if(oct2==5){count += (baseInc << 5);}
-    if(oct2==6){count += (baseInc << 6);}
-    if(oct2==7){count += (baseInc << 7);}
+    if(MainOscOct==0){count += (baseInc);}
+    if(MainOscOct==1){count += (baseInc << 1);}
+    if(MainOscOct==2){count += (baseInc << 2);}
+    if(MainOscOct==3){count += (baseInc << 3);}
+    if(MainOscOct==4){count += (baseInc << 4);}
+    if(MainOscOct==5){count += (baseInc << 5);}
+    if(MainOscOct==6){count += (baseInc << 6);}
+    if(MainOscOct==7){count += (baseInc << 7);}
 
     //count += (unsigned long)ModWave; // frequency modulation
-    accumulator_now = (count & 0b111111110000000000) >> 10; // 32 bit
+    accumulator_now = (count & 0b1111111100000000000000) >> 14; // 32 bit
 
     if (waSy == 0)
     {
@@ -391,12 +395,13 @@ void __interrupt() timer0ISR()
     wave += wave2;
     FinalWave = wave;
 
-    TMR0L = 80;
+    TMR0L = 70;
     TMR0IF = 0;
 }
 unsigned int AdIn16bit(unsigned char ADchannel)
 {
     ADCON0bits.CHS = ADchannel;
+    for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
     ADCON2bits.ADFM = 1; // right justified
     GODONE = 1;
     while (GODONE){;}

@@ -326,8 +326,7 @@ void __interrupt() timer0ISR()
 
     // calculate frequency.
     //pitchpot += ModWave;
-    unsigned int freqIndex2 = (oscPitch & 0b11110000) >> 4;
-    //unsigned char oct2 = (oscPitch >> 7) & 7; // extract 3 MSBs as 0..7
+    unsigned int freqIndex2 = (oscPitch & 0b1111111110) >> 1;
     unsigned long baseInc = (unsigned long)notes[freqIndex2];
     // Use 'if' statements instead of dynamic shift for better performance
     if(MainOscOct==0){count += (baseInc);}

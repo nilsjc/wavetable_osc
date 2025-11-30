@@ -109,7 +109,6 @@ unsigned char waSy = 0;
 unsigned int bounceDelay = 0, adDelay=0;
 unsigned char MainOscOct = 0;
 unsigned int oldPitchPot = 0, oldModFreq = 0;
-unsigned char inputEnable = 1;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 int main()
@@ -155,18 +154,9 @@ int main()
         MainOscOct = (pitch >> 7) & 0b111;
 
         // get pitch input from pin 9 / RE1 / AN6
-        unsigned int pitchInput = 0;
-        if(inputEnable == 1){
-            pitchInput = AdIn16bit(7);
-            oldModFreq = pitchInput;
-        }
-        // combine pitch pot and pitch input
-        unsigned int result = pitchInput;//pitch + (pitchInput * 16); // TODO: fine tune shift
-
-        if (result > 1023)
-            result = 1023;
-
-        oscPitch = result;
+        unsigned int pitchInput = AdIn16bit(7);
+        oldModFreq = pitchInput;
+        oscPitch = pitchInput;
 
         // get wave pot
         // ActWave2 is the actual wave and Volume3 is used for the x-fading
@@ -210,7 +200,6 @@ int main()
         if (PORTDbits.RD0 == 0 && bounceDelay == 0)
         {
             bounceDelay = BOUNCEDELAY_TIME;
-            inputEnable ^= 1;
             ModWavse += 256;
             if (ModWavse > 2048)
                 ModWavse = 0;
@@ -340,7 +329,7 @@ void __interrupt() timer0ISR()
 
     //count += (unsigned long)ModWave; // frequency modulation
     accumulator_now = (count & 0b1111111100000000000000) >> 14; // 32 bit
-
+    
     if (waSy == 0)
     {
         tonePN += (unsigned char)accumulator_now;

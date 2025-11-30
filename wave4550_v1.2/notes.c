@@ -1,4 +1,4 @@
-
+// this table holds the frequency increment values for cv input notes
 const unsigned int notes[512] = {
     144, 145, 146, 147, 148, 149, 150, 151, 
 153, 154, 155, 156, 157, 158, 159, 160, 

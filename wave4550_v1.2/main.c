@@ -79,9 +79,11 @@
 #include "wavetables.c"
 #include "notes.c"
 unsigned int AdIn16bit(unsigned char ADchannel);
-static void MonitorThreeLeds(char c);
+static void SelectBusChannel(char c);
+static unsigned int ReadPotToInt(void);
+static unsigned char ReadPotToChar(void);
 void SendValueToPc(unsigned char value);
-void InitUart(){
+void InitUart(void){
     SPEN = 1; // ensable serial port
     BRGH = 0; // low speed
     BRG16 = 1; // high speed
@@ -111,6 +113,11 @@ unsigned char MainOscOct = 0;
 unsigned int oldPitchPot = 0, oldModFreq = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
+#define MAIN_OSC_FREQ_POT 0
+#define MAIN_OSC_WAVE_POT 1
+#define MAIN_OSC_PEEK_pot 2
+#define MOD_OSC_FREQ_POT 3
+#define MOD_OSC_INDEX_POT 4
 int main()
 {
     TRISC = 0x00;
@@ -149,7 +156,8 @@ int main()
     for (;;)
     {
         // get pitch pot
-        unsigned int pitch = AdIn16bit(0);
+        SelectBusChannel(MAIN_OSC_FREQ_POT);
+        unsigned int pitch = ReadPotToInt();
         oldPitchPot = pitch;
         MainOscOct = (pitch >> 7) & 0b111;
 
@@ -161,7 +169,11 @@ int main()
         // get wave pot
         // ActWave2 is the actual wave and Volume3 is used for the x-fading
         // between waves, för smooth wave sweeping
-        adresult16 = AdIn16bit(1);
+        SelectBusChannel(MAIN_OSC_WAVE_POT);
+        adresult16 = ReadPotToInt();
+        unsigned int waveInput = AdIn16bit(1);
+        adresult16 += waveInput;
+
         if (ModDest == 0){ ModWave2 = 0; }
         
         adresult16 += ModWave2;
@@ -172,27 +184,16 @@ int main()
 
         // get peek pot
         // peek extends the wave read, reading outside the actual wave memory
-        ADCON0bits.CHS = 3;
-        for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
-        ADFM = 0;
-        GODONE = 1;
-        adresult8 = 0;
-        while (GODONE){;}
-        adresult8 += ADRESH;
-        Peek = adresult8;
+        SelectBusChannel(MAIN_OSC_PEEK_pot);
+        Peek = ReadPotToChar();
 
         // get Modulation Frequency pot
-        ModFreq = AdIn16bit(4);
+        SelectBusChannel(MOD_OSC_FREQ_POT);
+        ModFreq = ReadPotToInt();
 
         // get Modulation Index pot
-        ADCON0bits.CHS = 5;
-        for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
-        ADFM = 0;
-        GODONE = 1;
-        adresult8 = 0;
-        while (GODONE){;}
-        adresult8 = ADRESH;
-        FMLevel = ModLevel = adresult8;
+        SelectBusChannel(MOD_OSC_INDEX_POT);
+        FMLevel = ModLevel = ReadPotToChar();
 
         // button handling
 
@@ -213,35 +214,17 @@ int main()
         {
             bounceDelay = BOUNCEDELAY_TIME;
             ModDest++;
-            if (ModDest == 4)
+            if (ModDest >= 4)
                 ModDest = 1;
             // set modes according to ModDest
             PitchMode = ModDest & 1;
             WaveMode = (ModDest & 2) >> 1;
-
-            // GlobalPitch += 8;
-            // if(GlobalPitch > 126)
-            //     GlobalPitch = 0;
         }
 
         // select Wave bank
         if (PORTDbits.RD2 == 0 && bounceDelay == 0)
         {
-            // unsigned char pMsb = (oldPitchPot >> 8) & 0x03;
-            // SendValueToPc(pMsb);
-            // unsigned char p = oldPitchPot & 0xFF;
-            // SendValueToPc(p);
-
-            // unsigned char oMsb = (oldModFreq >> 8) & 0x03;
-            // SendValueToPc(oMsb);
-            // unsigned char oi = oldModFreq & 0xFF;
-            // SendValueToPc(oi);
-        
             bounceDelay = BOUNCEDELAY_TIME;
-            // GlobalOct++;
-            // if (GlobalOct > 7)
-            //      GlobalOct = 0;
-
             WaveBank += 2304;
             if (WaveBank >= 3000) // 6912
             {
@@ -329,7 +312,7 @@ void __interrupt() timer0ISR()
 
     //count += (unsigned long)ModWave; // frequency modulation
     accumulator_now = (count & 0b1111111100000000000000) >> 14; // 32 bit
-    
+
     if (waSy == 0)
     {
         tonePN += (unsigned char)accumulator_now;
@@ -389,7 +372,7 @@ void __interrupt() timer0ISR()
 unsigned int AdIn16bit(unsigned char ADchannel)
 {
     ADCON0bits.CHS = ADchannel;
-    for(adDelay=0; adDelay<30; adDelay++){;} // small delay for channel switching
+    for(adDelay=0; adDelay<20; adDelay++){;} // small delay for channel switching
     ADCON2bits.ADFM = 1; // right justified
     GODONE = 1;
     while (GODONE){;}
@@ -397,13 +380,35 @@ unsigned int AdIn16bit(unsigned char ADchannel)
     return result;
 }
 
+unsigned int ReadPotToInt()
+{
+    ADCON0bits.CHS = 0;
+    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+    ADCON2bits.ADFM = 1; // right justified
+    GODONE = 1;
+    while (GODONE){;}
+    unsigned int result = (unsigned int)(ADRESH <<8) | ADRESL;
+    return result;
+}
+unsigned char ReadPotToChar()
+{
+    ADCON0bits.CHS = 0;
+    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+    ADFM = 0;
+    GODONE = 1;
+    while (GODONE){;}
+    unsigned char adresultChar = ADRESH;
+    return adresultChar;
+}
+
 void SendValueToPc(unsigned char value){
     while(!TRMT){;}
     TXREG = value;
 }
 
-void MonitorThreeLeds(char c){
+void SelectBusChannel(char c){
     PORTCbits.RC0 = (c & 0b00000001);
     PORTCbits.RC1 = (c & 0b00000010) >> 1;
     PORTCbits.RC2 = (c & 0b00000100) >> 2;
+    for(adDelay=0; adDelay<20; adDelay++){;} // small delay for channel switching
 }

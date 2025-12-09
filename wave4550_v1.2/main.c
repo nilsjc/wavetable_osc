@@ -85,6 +85,7 @@ static void SelectBusChannel(char c);
 static unsigned int ReadPotToInt(void);
 static unsigned char ReadPotToChar(void);
 void TransmitValue(unsigned char value);
+void ReadPanelPots(void);
 void InitUart(void){
     SPEN = 1; // ensable serial port
     BRGH = 0; // low speed
@@ -98,23 +99,22 @@ void InitUart(void){
 } 
 unsigned int ModWavse = 2816;
 signed int ModWave;
-unsigned int freq = 0, ModWave2;
 unsigned int WaveBank = 0;
-unsigned int adresult16 = 0, ActWave, ActWave2, wavse = 0;
-unsigned char adresult8, mode = 1, Peek = 0, Peek2 = 0, dly = 0;
-unsigned char Volume1, Volume2, Volume3, ModLevel, FMLevel;
+unsigned int ActWave, wavse = 0;
+unsigned long ModFreqPotValue = 0;
+unsigned char mode = 1, Peek = 0, Peek2 = 0;
+unsigned char Volume3, ModLevel, FMLevel;
 unsigned char FinalWave;
-unsigned long mainCount = 0, modCount = 0, nmbr = 0, nmbr2 = 0, ModFreq = 0, oscPitch = 0;
-unsigned char noscTone = 0, noscMod = 0;
-unsigned long count3 = 0;
+unsigned long mainCount = 0, modCount = 0, oscPitch = 0;
 unsigned char ModDest = 1, PitchMode = 1, WaveMode = 0;
 unsigned int peekWave = 256;
 unsigned char waSy = 0;
 unsigned int bounceDelay = 0, adDelay=0;
 unsigned char MainOscOct = 0;
 unsigned char RawModWave = 0;
-unsigned int oldPitchPot = 0, oldModFreq = 0;
 unsigned char switchDelay = 18;
+unsigned char ReadPotNumber = 0;
+unsigned int WavePotValue = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -133,13 +133,11 @@ int main()
     ADCON1 = 0b11100010;// 0x08;
     ADCON2 = 0xAB;
     VCFG0 = 1; // Vref+ = Vdd reference on AN3 (pin 9)
-
     ADFM = 1;
 
     T0CON = 0b11011000; // Timer0 ON, 16 bit, no prescaler
     /*
     T0CON = 0b11010000; // Timer0 ON, 16 bit, prescaler, Fosc/4
-
     */
 
     ADIP = 1;
@@ -154,45 +152,22 @@ int main()
 
     for (;;)
     {
-        // get pitch pot
-        SelectBusChannel(MAIN_OSC_FREQ_POT);
-        unsigned int pitch = ReadPotToInt();
-        oldPitchPot = pitch;
-        MainOscOct = (pitch >> 7) & 0b111;
+        ReadPanelPots();
 
         // get pitch input from pin 9 / RE1 / AN6
         unsigned int pitchInput = AdIn16bit(7);
-        oldModFreq = pitchInput;
         oscPitch = pitchInput;
 
         // get wave pot
-        // ActWave2 is the actual wave and Volume3 is used for the x-fading
+        // ActWave is the actual wave and Volume3 is used for the x-fading
         // between waves, för smooth wave sweeping
-        SelectBusChannel(MAIN_OSC_WAVE_POT);
-        adresult16 = ReadPotToInt();
         unsigned int waveInput = AdIn16bit(1);
-        adresult16 += waveInput;
+        waveInput += WavePotValue;
+        unsigned int CalcWave = (waveInput & 0b1111000000);
+        CalcWave <<= 2;
+        ActWave = CalcWave;
+        Volume3 = (waveInput & 0b111111);
 
-        if (ModDest == 0){ ModWave2 = 0; }
-        
-        adresult16 += ModWave2;
-        ActWave2 = (adresult16 & 0b1111000000);
-        ActWave2 <<= 2;
-        ActWave = ActWave2;
-        Volume3 = (adresult16 & 0b111111);
-
-        // get peek pot
-        // peek extends the wave read, reading outside the actual wave memory
-        SelectBusChannel(MAIN_OSC_PEEK_pot);
-        Peek = ReadPotToChar();
-
-        // get Modulation Frequency pot
-        SelectBusChannel(MOD_OSC_FREQ_POT);
-        ModFreq = ReadPotToInt();
-
-        // get Modulation Index pot
-        SelectBusChannel(MOD_OSC_INDEX_POT);
-        FMLevel = ModLevel = ReadPotToChar();
 
         // button handling
 
@@ -281,13 +256,13 @@ void __interrupt() timer0ISR()
     unsigned const char *readAndPointPN = table1;
     signed const char *tonePN = table3;
     signed const char *modPN = table3;
-    // char direction = 1; // 
-    // 1: up, 0: down
     
     // ******************************************** MODULATION OSCILLATOR ********************************************
-    int modFreqIndx = (ModFreq & 0b1111111110) >> 1;
+    int modFreqIndx = ModFreqPotValue & 0b111111111;
+    char modOctave = (ModFreqPotValue >> 9) & 0b1;
     unsigned long modInc = (unsigned long)notes[modFreqIndx];
-    modCount += (modInc << 4);
+    if(modOctave==0) modCount += (modInc << 2);
+    else modCount += (modInc << 7);
 
     unsigned long accumulator_now = (modCount & 0b111111110000000000000000) >> 16; // 32 bit
     //modPN += (accumulator_now + 2304);
@@ -423,5 +398,34 @@ void SelectBusChannel(char c){
     PORTCbits.RC0 = (c & 0b00000001);
     PORTCbits.RC1 = (c & 0b00000010) >> 1;
     PORTCbits.RC2 = (c & 0b00000100) >> 2;
-    for(adDelay=0; adDelay<20; adDelay++){;} // small delay for channel switching
+    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+}
+
+void ReadPanelPots(void){
+
+    switch(ReadPotNumber){
+        case 0:
+            SelectBusChannel(MAIN_OSC_FREQ_POT);
+            unsigned int pitch = ReadPotToInt();
+            MainOscOct = (pitch >> 7) & 0b111;
+            break;
+        case 1:
+            SelectBusChannel(MAIN_OSC_WAVE_POT);
+            WavePotValue = ReadPotToInt();
+            break;
+        case 2:
+            SelectBusChannel(MAIN_OSC_PEEK_pot);
+            Peek = ReadPotToChar();
+            break;
+        case 3:
+            SelectBusChannel(MOD_OSC_FREQ_POT);
+            ModFreqPotValue = ReadPotToInt();
+            break;
+        case 4:
+            SelectBusChannel(MOD_OSC_INDEX_POT);
+            FMLevel = ModLevel = ReadPotToChar();
+            break;
+    }
+    ReadPotNumber++;
+    if(ReadPotNumber>4){ReadPotNumber=0;}
 }

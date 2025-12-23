@@ -98,23 +98,33 @@ void InitUart(void){
     
 } 
 unsigned int ModWavse = 2816;
-signed int ModWave;
 unsigned int WaveBank = 0;
-unsigned int ActWave, wavse = 0;
+unsigned int ActWave; 
+unsigned int Wavselect = 0;
 unsigned long ModFreqPotValue = 0;
-unsigned char mode = 1, Peek = 0, Peek2 = 0;
-unsigned char Volume3, ModLevel, FMLevel;
+unsigned char PeekPotValue = 0;
+unsigned char Peek2 = 0;
+unsigned char Volume3;
+unsigned char ModLevelPotAmount;
+unsigned char HalfModLeveAmount;
 unsigned char FinalWave;
-unsigned long mainCount = 0, modCount = 0, oscPitch = 0;
-unsigned char ModDest = 1, PitchMode = 1, WaveMode = 0;
-unsigned int peekWave = 256;
-unsigned char waSy = 0;
-unsigned int bounceDelay = 0, adDelay=0;
+unsigned long MainCount = 0;
+unsigned long modCount = 0;
+unsigned long MainOscPitch = 0;
+unsigned char MainWaveSelect = 0;
+unsigned char ModDest = 1; 
+unsigned char PitchMode = 1;
+unsigned char WaveMode = 0;
+unsigned int PeekWave = 256;
+unsigned char WaSy = 0;
+unsigned int BounceDelay = 0;
+unsigned char DelayOutside=0;
 unsigned char MainOscOct = 0;
 unsigned char RawModWave = 0;
-unsigned char switchDelay = 18;
-unsigned char ReadPotNumber = 0;
+unsigned char InInteruptDly = 18;
+unsigned char PotIdSelect = 0;
 unsigned int WavePotValue = 0;
+unsigned long MainModFreq = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -154,27 +164,35 @@ int main()
     {
         ReadPanelPots();
 
-        // get pitch input from pin 9 / RE1 / AN6
-        unsigned int pitchInput = AdIn16bit(7);
-        oscPitch = pitchInput;
+        // get pitch input from pin 10 / AN7
+        MainOscPitch = AdIn16bit(7);
 
         // get wave pot
         // ActWave is the actual wave and Volume3 is used for the x-fading
         // between waves, för smooth wave sweeping
         unsigned int waveInput = AdIn16bit(1);
         waveInput += WavePotValue;
-        unsigned int CalcWave = (waveInput & 0b1111000000);
-        CalcWave <<= 2;
-        ActWave = CalcWave;
+        unsigned int calcWave = (waveInput & 0b1111000000);
+        calcWave <<= 2;
+        ActWave = calcWave;
         Volume3 = (waveInput & 0b111111);
+
+        // get mod freq input from pin 7 / AN4
+        //MainModFreq = AdIn16bit(4);
+
+        // get mod amount input from pin 8 / AN5
+
+        // get 'peek' amount input from pin 9 / AN6
+
 
 
         // button handling
 
         // ModWavse = Modulation Wave Select (8 waveforms)
-        if (PORTDbits.RD0 == 0 && bounceDelay == 0)
+        // TODO 'copy' mode
+        if (PORTDbits.RD0 == 0 && BounceDelay == 0)
         {
-            bounceDelay = BOUNCEDELAY_TIME;
+            BounceDelay = BOUNCEDELAY_TIME;
             ModWavse += 256;
             if (ModWavse > 3841)
                 ModWavse = 2816;
@@ -185,13 +203,13 @@ int main()
         // ModDest: 1 = frequency modulation
         // ModDest: 2 = wave modulation
         // ModDest: 3 = both
-        if (PORTDbits.RD1 == 0 && bounceDelay == 0)
+        if (PORTDbits.RD1 == 0 && BounceDelay == 0)
         {
-            bounceDelay = BOUNCEDELAY_TIME;
+            BounceDelay = BOUNCEDELAY_TIME;
             
             ModDest++;
-            if (ModDest >= 4)
-                ModDest = 1;
+            if (ModDest > 3)
+                ModDest = 0;
             // set modes according to ModDest
             // TransmitValue(ModDest);
             PitchMode = ModDest & 1;
@@ -199,15 +217,21 @@ int main()
         }
 
         // select Wave bank
-        if (PORTDbits.RD2 == 0 && bounceDelay == 0)
+        if (PORTDbits.RD2 == 0 && BounceDelay == 0)
         {
-            bounceDelay = BOUNCEDELAY_TIME;
-            WaveBank += 2304;
-            if (WaveBank >= 3000) // 6912
+            BounceDelay = BOUNCEDELAY_TIME;
+            MainWaveSelect++;
+            if(MainWaveSelect >= 2)
             {
-                WaveBank = 0;
-                waSy ^= 1;
+                MainWaveSelect=0;
+                WaSy ++;
+                if(WaSy > 1){
+                    WaSy=0;
+                }
             }
+
+            WaveBank = 256 * (MainWaveSelect * 16);
+
             // TransmitValue(WaveBank / 256);
         }
 
@@ -222,9 +246,9 @@ int main()
         //         peekWave = 256;
         // }
 
-        if (bounceDelay > 0)
+        if (BounceDelay > 0)
         {
-            bounceDelay--;
+            BounceDelay--;
         }
     }
 }
@@ -234,20 +258,20 @@ void __interrupt() timer0ISR()
     // switch 4066 gate in S/H
     PORTDbits.RD5 = 1;
     PORTDbits.RD6 = 0;
-    for(switchDelay = 0; switchDelay < 2; switchDelay++){;}
+    for(InInteruptDly = 0; InInteruptDly < 2; InInteruptDly++){;}
     // output main osc wave
     LATB = RawModWave;
 
-    for(switchDelay = 0; switchDelay < 40; switchDelay++){;} // was 50
+    for(InInteruptDly = 0; InInteruptDly < 40; InInteruptDly++){;} // was 50
     // switch 4066 gate in S/H
     PORTDbits.RD5 = 0;
     LATB = 0;
-    for(switchDelay = 0; switchDelay < 2; switchDelay++){;}
+    for(InInteruptDly = 0; InInteruptDly < 2; InInteruptDly++){;}
     PORTDbits.RD6 = 1;
-    for(switchDelay = 0; switchDelay < 2; switchDelay++){;}
+    for(InInteruptDly = 0; InInteruptDly < 2; InInteruptDly++){;}
     // output main osc wave
     LATB = FinalWave;
-    for(switchDelay = 0; switchDelay < 40; switchDelay++){;}
+    for(InInteruptDly = 0; InInteruptDly < 40; InInteruptDly++){;}
     PORTDbits.RD5 = 0;
     PORTDbits.RD6 = 0;
     LATB = 0;
@@ -273,53 +297,63 @@ void __interrupt() timer0ISR()
     RawModWave = 127;
     RawModWave += *modPN;
 
-    // final modulation wave
-    unsigned char modwavet = RawModWave;
-
-    // modulation level
-    modwavet *= ModLevel;
-
-    // take result from 18F4550 inbuilt multiplicator
-    ModWave = PRODH;
-    ModWave -= 128;
-    //ModWave *= 128;
+    unsigned char modWave = 127;
+    modWave += *modPN;
+    modWave *= ModLevelPotAmount;
+    modWave = PRODH;
 
     // ******************************************** MAIN OSCILLATOR **************************************************
     // calculate frequency.
-    //pitchpot += ModWave;
-    unsigned int mainFreqIndx = (oscPitch & 0b1111111110) >> 1;
+    if(PitchMode)
+    {
+        unsigned long checkPitch = (unsigned long)HalfModLeveAmount + (unsigned long)modWave;
+        if(checkPitch > MainOscPitch)
+        {
+            MainOscPitch = 0;
+        }
+        else
+        {
+            MainOscPitch += (unsigned long)modWave;
+            MainOscPitch -= HalfModLeveAmount;
+        }
+        
+    }
+    unsigned int mainFreqIndx = (MainOscPitch & 0b1111111110) >> 1;
     unsigned long mainInc = (unsigned long)notes[mainFreqIndx];
+
     // Use 'if' statements instead of dynamic shift for better performance
-    if(MainOscOct==0){mainCount += (mainInc);}
-    if(MainOscOct==1){mainCount += (mainInc << 1);}
-    if(MainOscOct==2){mainCount += (mainInc << 2);}
-    if(MainOscOct==3){mainCount += (mainInc << 3);}
-    if(MainOscOct==4){mainCount += (mainInc << 4);}
-    if(MainOscOct==5){mainCount += (mainInc << 5);}
-    if(MainOscOct==6){mainCount += (mainInc << 6);}
-    if(MainOscOct==7){mainCount += (mainInc << 7);}
+    if(MainOscOct==0){MainCount += (mainInc);}
+    if(MainOscOct==1){MainCount += (mainInc << 1);}
+    if(MainOscOct==2){MainCount += (mainInc << 2);}
+    if(MainOscOct==3){MainCount += (mainInc << 3);}
+    if(MainOscOct==4){MainCount += (mainInc << 4);}
+    if(MainOscOct==5){MainCount += (mainInc << 5);}
+    if(MainOscOct==6){MainCount += (mainInc << 6);}
+    if(MainOscOct==7){MainCount += (mainInc << 7);}
 
     //count += (unsigned long)ModWave; // frequency modulation
-    accumulator_now = (mainCount & 0b1111111100000000000000) >> 14; // 32 bit
+    accumulator_now = (MainCount & 0b1111111100000000000000) >> 14; // 32 bit
 
-    if (waSy == 0)
+    if (WaSy == 0)
     {
         tonePN += (unsigned char)accumulator_now;
         tonePN += (ActWave + WaveBank);
     }
-    else if(waSy == 1)
+    else if(WaSy == 1)
     {
         readAndPointPN += (unsigned char)accumulator_now;
-        readAndPointPN += peekWave;
-        Peek2 = *readAndPointPN;
-        unsigned int waveCycle = Peek2;
-        Peek2 *= Peek;
-        accumulator_now = PRODH;
-        accumulator_now <<= 1;
-        waveCycle += accumulator_now;
-        tonePN += waveCycle;
+        tonePN += (ActWave + WaveBank);
+        tonePN += (unsigned char)*readAndPointPN;
+        //readAndPointPN += PeekWave;
+        //Peek2 = *readAndPointPN;
+        //unsigned int waveCycle = Peek2;
+        //Peek2 *= 1;
+        //accumulator_now = PRODH;
+        //accumulator_now <<= 1;
+        //waveCycle += accumulator_now;
+        //tonePN += waveCycle;
     }
-    else if(waSy == 2)
+    else if(WaSy == 2)
     {
         tonePN += (unsigned char)accumulator_now;
         tonePN += (ActWave + WaveBank);
@@ -328,7 +362,13 @@ void __interrupt() timer0ISR()
     // wave modulation
     if (WaveMode)
     {
-        tonePN += ModWave;
+        tonePN += modWave;
+        if(modWave < HalfModLeveAmount){
+            tonePN -= modWave;
+        }
+        else if(modWave > HalfModLeveAmount){
+            tonePN += modWave;
+        }
     }
 
     // selecting wave and wave bank
@@ -360,7 +400,7 @@ void __interrupt() timer0ISR()
 unsigned int AdIn16bit(unsigned char ADchannel)
 {
     ADCON0bits.CHS = ADchannel;
-    for(adDelay=0; adDelay<20; adDelay++){;} // small delay for channel switching
+    for(DelayOutside=0; DelayOutside<20; DelayOutside++){;} // small delay for channel switching
     ADCON2bits.ADFM = 1; // right justified
     GODONE = 1;
     while (GODONE){;}
@@ -371,7 +411,7 @@ unsigned int AdIn16bit(unsigned char ADchannel)
 unsigned int ReadPotToInt()
 {
     ADCON0bits.CHS = 0;
-    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+    for(DelayOutside=0; DelayOutside<10; DelayOutside++){;} // small delay for channel switching
     ADCON2bits.ADFM = 1; // right justified
     GODONE = 1;
     while (GODONE){;}
@@ -381,7 +421,7 @@ unsigned int ReadPotToInt()
 unsigned char ReadPotToChar()
 {
     ADCON0bits.CHS = 0;
-    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+    for(DelayOutside=0; DelayOutside<10; DelayOutside++){;} // small delay for channel switching
     ADFM = 0;
     GODONE = 1;
     while (GODONE){;}
@@ -398,34 +438,33 @@ void SelectBusChannel(char c){
     PORTCbits.RC0 = (c & 0b00000001);
     PORTCbits.RC1 = (c & 0b00000010) >> 1;
     PORTCbits.RC2 = (c & 0b00000100) >> 2;
-    for(adDelay=0; adDelay<10; adDelay++){;} // small delay for channel switching
+    for(DelayOutside=0; DelayOutside<10; DelayOutside++){;} // small delay for channel switching
 }
 
 void ReadPanelPots(void){
 
-    switch(ReadPotNumber){
+    SelectBusChannel(PotIdSelect);
+    switch(PotIdSelect){
         case 0:
-            SelectBusChannel(MAIN_OSC_FREQ_POT);
-            unsigned int pitch = ReadPotToInt();
-            MainOscOct = (pitch >> 7) & 0b111;
+            {
+                unsigned int pitch = ReadPotToInt();
+                MainOscOct = (pitch >> 7) & 0b111;
+            } 
             break;
         case 1:
-            SelectBusChannel(MAIN_OSC_WAVE_POT);
             WavePotValue = ReadPotToInt();
             break;
         case 2:
-            SelectBusChannel(MAIN_OSC_PEEK_pot);
-            Peek = ReadPotToChar();
+            PeekPotValue = ReadPotToChar();
             break;
         case 3:
-            SelectBusChannel(MOD_OSC_FREQ_POT);
             ModFreqPotValue = ReadPotToInt();
             break;
         case 4:
-            SelectBusChannel(MOD_OSC_INDEX_POT);
-            FMLevel = ModLevel = ReadPotToChar();
+            ModLevelPotAmount = ReadPotToChar();
+            HalfModLeveAmount = ModLevelPotAmount >> 1;
             break;
     }
-    ReadPotNumber++;
-    if(ReadPotNumber>4){ReadPotNumber=0;}
+    PotIdSelect++;
+    if(PotIdSelect>4){PotIdSelect=0;}
 }

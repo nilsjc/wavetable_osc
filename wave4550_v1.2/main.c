@@ -127,7 +127,6 @@ unsigned char InInteruptDly = 18;
 unsigned char PotIdSelect = 0;
 unsigned int WavePotValue = 0;
 unsigned long MainModFreq = 0;
-unsigned char ModLevelInput = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -187,7 +186,20 @@ int main()
         //MainModFreq = AdIn16bit(4);
 
         // get mod amount input from pin 9 / AN6
-        ModLevelInput = AdIn16bit(6);
+        unsigned int modLevelInputInt = AdIn16bit(6) >> 2;
+        unsigned char modLevelInputChar = ((unsigned char)modLevelInputInt) >> 1;
+        // calculate final mod amount
+        // 0 volt represents no moduation, -V represents negative modulation
+        // and +V represents positive modulation
+        modLevelInputChar += (ModLevelManual >>1);
+        ModLevelPotAmount = modLevelInputChar & 0b1111111;
+            if((modLevelInputChar & 0b10000000) !=0){
+                ModMinus = 0;
+            }else{
+                ModMinus = 1;
+                ModLevelPotAmount = 127 - ModLevelPotAmount;
+            }
+            HalfModLeveAmount = ModLevelPotAmount >> 1;
 
 
 
@@ -308,16 +320,6 @@ void __interrupt() timer0ISR()
     // calculate frequency.
     if(PitchMode) // frequency modulation mode
     {
-        // unsigned long checkPitch =  (unsigned long)modWave - (unsigned long)HalfModLeveAmount;
-        // if(checkPitch > MainOscPitch)
-        // {
-        //     MainOscPitch = 0;
-        // }
-        // else
-        // {
-        //     MainOscPitch += (unsigned long)modWave;
-        //     MainOscPitch -= HalfModLeveAmount;
-        // }
         if(ModMinus)
         {
             MainOscPitch += (unsigned long)HalfModLeveAmount;
@@ -372,7 +374,11 @@ void __interrupt() timer0ISR()
     // wave modulation
     if (WaveMode)
     {
-        tonePN += ((unsigned long)modWave << 4);
+        if(ModMinus){
+            tonePN -= ((unsigned long)modWave << 2);
+        }else{
+            tonePN += ((unsigned long)modWave << 2);
+        }
     }
 
     // for converting from signed to unsigned ?
@@ -463,14 +469,6 @@ void ReadPanelPots(void){
             break;
         case 4:
             ModLevelManual = ReadPotToChar();
-            ModLevelPotAmount = ModLevelManual & 0b1111111;
-            if((ModLevelManual & 0b10000000) !=0){
-                ModMinus = 0;
-            }else{
-                ModMinus = 1;
-                ModLevelPotAmount = 127 - ModLevelPotAmount;
-            }
-            HalfModLeveAmount = ModLevelPotAmount >> 1;
             break;
     }
     PotIdSelect++;

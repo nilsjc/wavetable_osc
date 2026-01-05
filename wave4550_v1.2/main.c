@@ -80,6 +80,7 @@
 #include <xc.h>
 #include "wavetables.c"
 #include "notes.c"
+#include "voicesample.c"
 unsigned int AdIn16bit(unsigned char ADchannel);
 static void SelectBusChannel(char c);
 static unsigned int ReadPotToInt(void);
@@ -112,7 +113,7 @@ unsigned char ModMinus = 0;
 unsigned char FinalWave;
 unsigned long MainCount = 0;
 unsigned long modCount = 0;
-unsigned long MainOscPitch = 0;
+unsigned long MainPitchExtIn = 0;
 unsigned char MainWaveSelect = 0;
 unsigned char ModDest = 1; 
 unsigned char PitchMode = 1;
@@ -126,7 +127,10 @@ unsigned char RawModWave = 0;
 unsigned char InInteruptDly = 18;
 unsigned char PotIdSelect = 0;
 unsigned int WavePotValue = 0;
-unsigned long MainModFreq = 0;
+unsigned long ModFreqExtIn = 0;
+unsigned int CopyWave = 0;
+unsigned char OldAccuNow = 0;
+unsigned int SamplingLength = 12392;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -167,23 +171,26 @@ int main()
         ReadPanelPots();
 
         // get pitch input from pin 10 / AN7
-        MainOscPitch = AdIn16bit(7);
+        MainPitchExtIn = AdIn16bit(7);
 
         // get wave pot
         // ActWave is the actual wave and Volume3 is used for the x-fading
         // between waves, för smooth wave sweeping
         unsigned int waveInput = AdIn16bit(1);
         waveInput += WavePotValue;
-        unsigned int calcWave = (waveInput & 0b1111000000);
+        unsigned int masking = 0b1111111111;
+        if(WaSy<3){
+            masking = 0b1111000000;
+        }
+        unsigned int calcWave = (waveInput & masking);
         calcWave <<= 2;
         ActWave = calcWave;
         Volume3 = (waveInput & 0b111111);
 
         // get peek input from pin 7 / AN4
         //MainModFreq = AdIn16bit(4);
-
         // get mod freq input from pin 8 / AN5
-        //MainModFreq = AdIn16bit(4);
+        ModFreqExtIn = AdIn16bit(5);
 
         // get mod amount input from pin 9 / AN6
         unsigned int modLevelInputInt = AdIn16bit(6) >> 2;
@@ -222,6 +229,10 @@ int main()
                 modOscTable[z] = modWaves[(z+offset)];
                 }
             }
+            if(ModWavse == 3)
+            {
+                CopyWave = 256;
+            }
             // TransmitValue(ModWavse / 256);
         }
 
@@ -251,7 +262,7 @@ int main()
             {
                 MainWaveSelect=0;
                 WaSy ++;
-                if(WaSy > 1){
+                if(WaSy > 3){
                     WaSy=0;
                 }
             }
@@ -295,17 +306,18 @@ void __interrupt() timer0ISR()
     unsigned const char *readAndPointPN = table1;
     signed const char *tonePN = table3;
     signed const char *modPN = modOscTable;
+    unsigned const char *voiceSamplePN = voiceSample;
+    unsigned const char *granularTablePN = granularTable;
     
     // ******************************************** MODULATION OSCILLATOR ********************************************
-    int modFreqIndx = ModFreqPotValue & 0b111111111;
-    char modOctave = (ModFreqPotValue >> 9) & 0b1;
+    unsigned long modFreq = ModFreqExtIn + ModFreqPotValue;
+    int modFreqIndx = modFreq & 0b111111111;
+    char modOctave = (modFreq >> 9) & 0b1;
     unsigned long modInc = (unsigned long)notes[modFreqIndx];
     if(modOctave==0) modCount += (modInc << 2);
     else modCount += (modInc << 7);
 
-    unsigned long accumulator_now = (modCount & 0b111111110000000000000000) >> 16; // 32 bit
-    //modPN += (accumulator_now + 2304);
-
+    unsigned long accumulator_now = (modCount & 0b1111111100000000000000) >> 14; // 32 bit
     modPN += (unsigned char)accumulator_now;
 
     RawModWave = 127;
@@ -322,16 +334,16 @@ void __interrupt() timer0ISR()
     {
         if(ModMinus)
         {
-            MainOscPitch += (unsigned long)HalfModLeveAmount;
-            MainOscPitch -= (unsigned long)modWave;
+            MainPitchExtIn += (unsigned long)HalfModLeveAmount;
+            MainPitchExtIn -= (unsigned long)modWave;
         }
         else
         {
-            MainOscPitch += (unsigned long)modWave;
-            MainOscPitch -= (unsigned long)HalfModLeveAmount;
+            MainPitchExtIn += (unsigned long)modWave;
+            MainPitchExtIn -= (unsigned long)HalfModLeveAmount;
         }
     }
-    unsigned int mainFreqIndx = (MainOscPitch & 0b1111111110) >> 1;
+    unsigned int mainFreqIndx = (MainPitchExtIn & 0b1111111110) >> 1;
     unsigned long mainInc = (unsigned long)notes[mainFreqIndx];
 
     // Use 'if' statements instead of dynamic shift for better performance
@@ -344,7 +356,33 @@ void __interrupt() timer0ISR()
     if(MainOscOct==6){MainCount += (mainInc << 6);}
     if(MainOscOct==7){MainCount += (mainInc << 7);}
 
-    accumulator_now = (MainCount & 0b1111111100000000000000) >> 14; // 32 bit
+    if(WaSy==2){
+        // SAMPLING PLAYBACK MODE
+        // TODO trig for "one shot function"
+        accumulator_now = (MainCount & 0b1111111111111100000000000000) >> 14; // 32 bit
+        if(accumulator_now > SamplingLength)accumulator_now = 0;
+        voiceSamplePN += accumulator_now;
+        FinalWave = *voiceSamplePN;
+        TMR0L = 50; // was 70
+        TMR0IF = 0;
+        return;
+
+    }else if(WaSy==3){
+        // SAMPLING GRANULAR PLAYBACK MODE
+        accumulator_now = (MainCount & 0b1111100000000000000) >> 14; // 32 bit
+        // create cosine 16 steps long
+        granularTablePN += (unsigned char)accumulator_now;
+        voiceSamplePN += *granularTablePN;
+        voiceSamplePN += ActWave;
+        FinalWave = *voiceSamplePN;
+        TMR0L = 50; // was 70
+        TMR0IF = 0;
+        return;
+    }
+    else{
+        accumulator_now = (MainCount & 0b1111111100000000000000) >> 14; // 32 bit
+
+    }
 
     if (WaSy == 0)
     {
@@ -365,11 +403,6 @@ void __interrupt() timer0ISR()
         //waveCycle += accumulator_now;
         //tonePN += waveCycle;
     }
-    else if(WaSy == 2)
-    {
-        tonePN += (unsigned char)accumulator_now;
-        tonePN += (ActWave + WaveBank);
-    }
 
     // wave modulation
     if (WaveMode)
@@ -380,7 +413,6 @@ void __interrupt() timer0ISR()
             tonePN += ((unsigned long)modWave << 2);
         }
     }
-
     // for converting from signed to unsigned ?
     unsigned char rawMainWave1 = 127;
     unsigned char rawMainWave2 = 127;
@@ -401,6 +433,13 @@ void __interrupt() timer0ISR()
     rawMainWave1 += rawMainWave2;
     FinalWave = rawMainWave1;
 
+    if(CopyWave>0){
+        if(OldAccuNow != (unsigned char)accumulator_now){
+            modOscTable[(CopyWave-1)] = FinalWave - 127;
+            CopyWave--;
+        }
+        OldAccuNow = (unsigned char)accumulator_now;    
+    }
     TMR0L = 50; // was 70
     TMR0IF = 0;
 }
@@ -465,7 +504,7 @@ void ReadPanelPots(void){
             PeekPotValue = ReadPotToChar();
             break;
         case 3:
-            ModFreqPotValue = ReadPotToInt();
+            ModFreqPotValue = (ReadPotToInt()) & 0b1111110000;
             break;
         case 4:
             ModLevelManual = ReadPotToChar();

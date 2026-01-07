@@ -12,10 +12,6 @@ build project: cntrl + shift + P, select MPLAB CMAKE:Build<br>
 ## TODOS
 
 - Rewrite new schematic and publish it<br>
-- 1V/OCT fine tune in code. Maybe change of tone lookup tables?<br>
-- Better output stage<br>
-- Multiple output stage<br>
-- External wave modulation<br>
 - LED indicators for various functions<br>
 - Fine tune pot<br>
 

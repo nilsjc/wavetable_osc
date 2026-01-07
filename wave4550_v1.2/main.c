@@ -81,6 +81,7 @@
 #include "wavetables.c"
 #include "notes.c"
 #include "voicesample.c"
+#include "windowTable.c"
 unsigned int AdIn16bit(unsigned char ADchannel);
 static void SelectBusChannel(char c);
 static unsigned int ReadPotToInt(void);
@@ -131,6 +132,9 @@ unsigned long ModFreqExtIn = 0;
 unsigned int CopyWave = 0;
 unsigned char OldAccuNow = 0;
 unsigned int SamplingLength = 12392;
+unsigned long SamplePartStart = 0;
+unsigned char SamplePartVolum;
+unsigned char SamplePlay = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -178,12 +182,12 @@ int main()
         // between waves, för smooth wave sweeping
         unsigned int waveInput = AdIn16bit(1);
         waveInput += WavePotValue;
-        unsigned int masking = 0b1111111111;
-        if(WaSy<3){
-            masking = 0b1111000000;
-        }
-        unsigned int calcWave = (waveInput & masking);
+        SamplePartVolum = (waveInput & 0b1111) << 4;
+        SamplePartStart = (waveInput << 3);
+        SamplePartStart &= 0b1111110000000;
+        unsigned int calcWave = (waveInput & 0b1111000000);
         calcWave <<= 2;
+        
         ActWave = calcWave;
         Volume3 = (waveInput & 0b111111);
 
@@ -307,7 +311,6 @@ void __interrupt() timer0ISR()
     signed const char *tonePN = table3;
     signed const char *modPN = modOscTable;
     unsigned const char *voiceSamplePN = voiceSample;
-    unsigned const char *granularTablePN = granularTable;
     
     // ******************************************** MODULATION OSCILLATOR ********************************************
     unsigned long modFreq = ModFreqExtIn + ModFreqPotValue;
@@ -357,25 +360,43 @@ void __interrupt() timer0ISR()
     if(MainOscOct==7){MainCount += (mainInc << 7);}
 
     if(WaSy==2){
-        // SAMPLING PLAYBACK MODE
-        // TODO trig for "one shot function"
+        // SAMPLING PLAYBACK MODE "one shot mode"
+        // TODO wave = start, peek = length/end
+        if(PORTDbits.RD4 && !SamplePlay){
+            SamplePlay = 1;
+            MainCount = 0;
+        }
+        if(!PORTDbits.RD4 && SamplePlay){
+            SamplePlay = 0;
+        }
         accumulator_now = (MainCount & 0b1111111111111100000000000000) >> 14; // 32 bit
-        if(accumulator_now > SamplingLength)accumulator_now = 0;
-        voiceSamplePN += accumulator_now;
-        FinalWave = *voiceSamplePN;
+        if(SamplePlay && accumulator_now < SamplingLength){
+            voiceSamplePN += accumulator_now;
+            FinalWave = *voiceSamplePN;
+        }else{
+            SamplePlay = 0;
+            FinalWave = 0;
+        }
+        
         TMR0L = 50; // was 70
         TMR0IF = 0;
         return;
 
     }else if(WaSy==3){
         // SAMPLING GRANULAR PLAYBACK MODE
-        accumulator_now = (MainCount & 0b1111100000000000000) >> 14; // 32 bit
-        // create cosine 16 steps long
-        granularTablePN += (unsigned char)accumulator_now;
-        voiceSamplePN += *granularTablePN;
-        voiceSamplePN += ActWave;
-        FinalWave = *voiceSamplePN;
-        TMR0L = 50; // was 70
+        accumulator_now = (MainCount & 0b1111111100000000000000) >> 14;
+        unsigned long sampleOffset = accumulator_now + SamplePartStart;
+        if(sampleOffset > SamplingLength)sampleOffset -= SamplingLength;
+        voiceSamplePN += sampleOffset;
+        unsigned char sample1 = *voiceSamplePN;
+        voiceSamplePN += 256;
+        unsigned char sample2 = *voiceSamplePN;
+        sample1 *= (255-SamplePartVolum);
+        sample1 = PRODH;
+        sample2 *= (SamplePartVolum);
+        sample2 = PRODH;
+        FinalWave = sample1 + sample2;
+        TMR0L = 50;
         TMR0IF = 0;
         return;
     }

@@ -91,8 +91,8 @@ void ReadPanelPots(void);
 void InitUart(void){
     SPEN = 1; // ensable serial port
     BRGH = 0; // low speed
-    BRG16 = 1; // high speed
-    SPBRG = 129; // 20MHz/16/38400-1
+    BRG16 = 0; // high speed
+    SPBRG = 64; // 40MHz/ 9600 baud rate
     TXEN = 1; // enable transmitter
     TRISCbits.RC6 = 0; // TX output
     TRISCbits.RC7 = 1; // RX input
@@ -131,10 +131,11 @@ unsigned int WavePotValue = 0;
 unsigned long ModFreqExtIn = 0;
 unsigned int CopyWave = 0;
 unsigned char OldAccuNow = 0;
-unsigned int SamplingLength = 12392;
+unsigned int SamplingLength = 12385;
 unsigned long SamplePartStart = 0;
 unsigned char SamplePartVolum;
 unsigned char SamplePlay = 0;
+unsigned int SampleOneShotStart = 0;
 #define BOUNCEDELAY_TIME 400
 #define _XTAL_FREQ   20000000UL
 #define MAIN_OSC_FREQ_POT 0
@@ -166,7 +167,7 @@ int main()
     GIE = 1;
     RBIE = 0;
     PORTCbits.RC2 = 0;
-    //InitUart();
+    InitUart();
     TMR0IE = 1; // timer0 interrupt disable/enable
 
 
@@ -182,6 +183,7 @@ int main()
         // between waves, för smooth wave sweeping
         unsigned int waveInput = AdIn16bit(1);
         waveInput += WavePotValue;
+        SampleOneShotStart = waveInput;
         SamplePartVolum = (waveInput & 0b1111) << 4;
         SamplePartStart = (waveInput << 3);
         SamplePartStart &= 0b1111110000000;
@@ -221,6 +223,7 @@ int main()
         // TODO 'copy' mode
         if (PORTDbits.RD0 == 0 && BounceDelay == 0)
         {
+            const unsigned char selectedWave[] = {0x51, 0x57,0x5A,0x58};
             BounceDelay = BOUNCEDELAY_TIME;
             ModWavse ++;
             if (ModWavse > 3){
@@ -237,7 +240,7 @@ int main()
             {
                 CopyWave = 256;
             }
-            // TransmitValue(ModWavse / 256);
+            TransmitValue(selectedWave[ModWavse]);
         }
 
         // Modulation destination, three modes selectable
@@ -320,7 +323,7 @@ void __interrupt() timer0ISR()
     if(modOctave==0) modCount += (modInc << 2);
     else modCount += (modInc << 7);
 
-    unsigned long accumulator_now = (modCount & 0b1111111100000000000000) >> 14; // 32 bit
+    unsigned long accumulator_now = (modCount & 0b11111111000000000000000) >> 15; // 32 bit
     modPN += (unsigned char)accumulator_now;
 
     RawModWave = 127;
@@ -364,7 +367,7 @@ void __interrupt() timer0ISR()
         // TODO wave = start, peek = length/end
         if(PORTDbits.RD4 && !SamplePlay){
             SamplePlay = 1;
-            MainCount = 0;
+            MainCount = SampleOneShotStart;
         }
         if(!PORTDbits.RD4 && SamplePlay){
             SamplePlay = 0;

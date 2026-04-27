@@ -1,3 +1,4 @@
+updated version: https://github.com/nilsjc/wavetable_osc/tree/main/wave4550_v1.2
 # My old wavetable oscillator 
 ![Alt text](https://github.com/nilsjc/wavetable_osc/blob/main/original/wave4550_schematic.png?raw=true "Schematic")<br>
 wave 4550 is an wavetable oscillator based on PIC4550 8-bit mcu.
